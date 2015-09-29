@@ -5,8 +5,7 @@ import aioamqp
 
 @asyncio.coroutine
 def callback(channel, body, envelope, properties):
-    yield from asyncio.sleep(1)
-    print(body)
+    yield from channel.basic_client_ack(envelope.delivery_tag)
 
 @asyncio.coroutine
 def receive():
@@ -20,7 +19,7 @@ def receive():
     queue_name = 'py2.queue'
 
     yield from asyncio.wait_for(
-        channel.queue(queue_name, durable=False, auto_delete=True), timeout=10
+        channel.queue(queue_name, durable=True, auto_delete=False), timeout=10
     )
 
     yield from channel.basic_consume(queue_name, callback=callback)
